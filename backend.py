@@ -4,7 +4,7 @@ import requests
 from datetime import datetime, timedelta
 from base64 import b64encode
 
-email, password = st.secrets["email"], st.secrets['passord']
+email, password = st.secrets["email"], st.secrets['password']
 
 project_id_mapping = {
     163465351: 'Email', 
