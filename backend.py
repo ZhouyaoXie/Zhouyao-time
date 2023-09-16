@@ -20,12 +20,14 @@ project_id_mapping = {
 }
 
 
-def get_time_entries(api_token, user_agent="api_example"):
+def get_time_entries(last_n_days):
+    # do not retrieve more than 30 days of data 
+    days = min(30, last_n_days)
 
     auth_token = b64encode(f"{email}:{password}".encode()).decode("ascii")
 
     end_date = datetime.utcnow().strftime('%Y-%m-%d')
-    start_date = (datetime.utcnow() - timedelta(days=7)).strftime('%Y-%m-%d')
+    start_date = (datetime.utcnow() - timedelta(days=days)).strftime('%Y-%m-%d')
 
     url = f'https://api.track.toggl.com/api/v9/me/time_entries?start_date={start_date}&end_date={end_date}'
 
@@ -35,9 +37,12 @@ def get_time_entries(api_token, user_agent="api_example"):
     entries = []
     for entry in data_json:
         if entry['project_id'] in project_id_mapping:
-            entries.append([project_id_mapping[entry['project_id']],entry['start'].replace('+00:00', '').replace('Z', '').replace('T', ' '), entry['stop'].replace('+00:00', '').replace('Z', '').replace('T', ' '), str(entry['duration']) + 's', entry['description']])
+            project_name = project_id_mapping[entry['project_id']]
+            start_time = utc_to_pst(entry['start'].replace('+00:00', '').replace('Z', '').replace('T', ' '))
+            stop_time = utc_to_pst(entry['stop'].replace('+00:00', '').replace('Z', '').replace('T', ' '))
+            entries.append([project_name, start_time, stop_time, str(entry['duration']) + 's', entry['description']])
 
-    return entries 
+    return entries
 
 
 def utc_to_pst(utc_time_str, input_format="%Y-%m-%d %H:%M:%S"):
@@ -72,7 +77,6 @@ def get_current_entry():
         "you may also try refreshing this page."
     ]
 
-
     try:
         for i in range(len(data_json)):
             if data_json[i]['project_id'] in project_id_mapping:
@@ -95,4 +99,5 @@ def get_current_entry():
     except Exception:
         return err_msg 
     
-    return err_msg 
+
+print(1515.0 / len(get_time_entries(7)))

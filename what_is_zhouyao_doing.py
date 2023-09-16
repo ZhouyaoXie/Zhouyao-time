@@ -21,6 +21,7 @@ for ln in get_current_entry():
 st.text('\n\n\n\n')
 st.markdown("*Explore the sidebar > to learn more.*")
 
+
 # This will create a sidebar
 st.sidebar.title("how im spending my time 🏄")
 st.sidebar.empty()

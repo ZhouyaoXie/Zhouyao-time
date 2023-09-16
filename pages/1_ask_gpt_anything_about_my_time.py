@@ -1,6 +1,17 @@
 import streamlit as st 
 from chatbot import ask_chatgpt
 
+
+# side bar
+st.sidebar.title("how im spending my time 🏄")
+st.sidebar.empty()
+st.sidebar.markdown("""
+About Me
+> [my website](xiezhouyao.site)  
+> [my blog](https://zhouyao.substack.com/)"""
+)
+
+
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -23,3 +34,4 @@ if prompt := st.chat_input("Try: what did Zhouyao do yesterday?"):
             message_placeholder.markdown(full_response + "▌")
         message_placeholder.markdown(full_response)
     st.session_state.messages.append({"role": "assistant", "content": full_response})
+
