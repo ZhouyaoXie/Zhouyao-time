@@ -99,5 +99,3 @@ def get_current_entry():
     except Exception:
         return err_msg 
     
-
-print(1515.0 / len(get_time_entries(7)))
