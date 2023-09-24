@@ -27,6 +27,6 @@ st.sidebar.title("how im spending my time 🏄")
 st.sidebar.empty()
 st.sidebar.markdown("""
 About Me
-> [my website](xiezhouyao.site)  
+> [my website](https://xiezhouyao.site)  
 > [my blog](https://zhouyao.substack.com/)"""
 )

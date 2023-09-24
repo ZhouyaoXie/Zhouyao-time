@@ -2,38 +2,58 @@ import os
 import openai
 import streamlit as st 
 import json 
+from datetime import datetime 
 
-from backend import get_time_entries 
+from backend import get_time_entries, get_current_entry, utc_to_pst
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # truncation logic: 
-# one record approx 40 tokens, task description = 100 tokens, user question = 200 tokens 
+# one record approx 40 tokens, task description = 300 tokens, user question = 200 tokens 
 # response = 600 tokens 
-# num of records = (16000 - 100 - 200 - 600) // 40 = 377
-entries = get_time_entries(30)[:350]
+# num of records = (16000 - 300 - 200 - 600) // 40 = 372
+MAX_ENTRIES = 350
 
-system_msg = """You are a personal time management and productivity AI assistant. Your job is to analyze the user's time tracking data, summarize patterns, and provide valuable insights that could help the user better understand how they're spending their time. 
+# initialize entry information 
+current_entry = get_current_entry() 
+time_entries = get_time_entries()
 
-Below is the user's information:
 
-Name: Zhouyao 
-Occupation: machine learning engineer  
-Things she would like to focus on: 
-- work & learn about machine learning
-- read fiction & non-fiction works
-- write essays for her blog called Fusion 
-- study music theory, songwriting, and music production
-- practice guitar and the piano & write songs
-- physical exercise and mental wellbeing
+def update_entries():
+  global current_entry, time_entries
+  new_entry = get_current_entry()
+  if new_entry != current_entry:
+    current_entry = new_entry
+    time_entries = get_time_entries()
 
-Zhouyao's last 30 days of time tracking records, in the format of "<project name>, <start time>, <stop time>, <duration in seconds>, <description>":
-{t}
+    # truncate if necessary 
+    if len(time_entries.split('\n')) > MAX_ENTRIES:
+      time_entries = '\n'.join(time_entries.split('\n')[:MAX_ENTRIES])
 
-Answer user's questions based on the information above. Provide your answer in less than 80 words. Include summary statistics if necessary. Avoid giving generic statements. Be as specific as possible.""".format(t = '\n'.join([', '.join(e) for e in entries]))
- 
 
 def ask_chatgpt():
+  global time_entries
+
+  update_entries()
+
+  system_msg = """You are a personal time management and productivity AI assistant for Zhouyao. Today's date is {d}.
+Your job is to analyze Zhouyao's time tracking data, summarize behavioral patterns, and provide valuable insights that could help users better understand how Zhouyao is spending her time. 
+
+Zhouyao's last 30 days of time tracking records, in reverse chronological order::
+{t}
+
+Answer any question regarding how Zhouyao spends her time in the past 30 days based on the time tracking data above. Provide your answer in less than 80 words. Make sure to only draft your response based on the time entries provided above.
+
+If you are asked to provide suggestions about how to improve her productivity and time management, provide an insightful response considering the following information:
+
+Things Zhouyao would like to focus on: 
+- work & learn about machine learning
+- read fiction & non-fiction works
+- write essays for her blog, Fusion 
+- study music theory, songwriting, and music production
+- practice guitar and the piano & write songs
+- physical exercise and mental wellbeing""".format(d = utc_to_pst(datetime.utcnow().strftime('%Y-%m-%d'), '%Y-%m-%d'), t = time_entries)
+
 
   completion = openai.ChatCompletion.create(
     model="gpt-3.5-turbo-16k",
@@ -44,4 +64,7 @@ def ask_chatgpt():
     stream=True,
   )
 
-  return completion 
+  return completion
+
+
+# print(time_entries)

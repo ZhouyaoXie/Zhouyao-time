@@ -20,7 +20,25 @@ project_id_mapping = {
 }
 
 
-def get_time_entries(last_n_days):
+def sort_function(record):
+    """
+    Sort entries by date in reverse chronological order. 
+    If two entries are in the same day, sort them by time in chronological order. 
+    """
+    date, time = record[1].split(' ')
+    # The negative sign in front of date is to sort the days in reverse chronological order
+    # We don't need a negative sign for time since within each day we want them in chronological order
+    return (-int(date.replace('-', '')), time)
+
+
+def format_record(record):
+    project, start_time, end_time, duration, description = record
+    hours, remainder = divmod(int(duration[:-1]), 3600)
+    minutes = remainder // 60
+    return f"{project}: {description}, from {start_time} to {end_time}, duration {hours} hours {minutes} minutes"
+
+
+def get_time_entries(last_n_days = 30):
     # do not retrieve more than 30 days of data 
     days = min(30, last_n_days)
 
@@ -36,13 +54,31 @@ def get_time_entries(last_n_days):
 
     entries = []
     for entry in data_json:
-        if entry['project_id'] in project_id_mapping:
+        # only send time entries that run more than 2 minutes 
+        if entry['project_id'] in project_id_mapping and entry['duration'] > 120:
             project_name = project_id_mapping[entry['project_id']]
             start_time = utc_to_pst(entry['start'].replace('+00:00', '').replace('Z', '').replace('T', ' '))
             stop_time = utc_to_pst(entry['stop'].replace('+00:00', '').replace('Z', '').replace('T', ' '))
             entries.append([project_name, start_time, stop_time, str(entry['duration']) + 's', entry['description']])
 
-    return entries
+    print(len(entries))
+
+    sorted_entries = sorted(entries, key=sort_function)
+
+    current_date = None
+    output_string = ""
+
+    for record in sorted_entries:
+        record_date = record[1].split(' ')[0]
+        
+        # Check if the date has changed or is the first record
+        if record_date != current_date:
+            output_string += record_date + "\n"
+            current_date = record_date
+        
+        output_string += format_record(record) + "\n"
+
+    return output_string
 
 
 def utc_to_pst(utc_time_str, input_format="%Y-%m-%d %H:%M:%S"):
@@ -99,3 +135,6 @@ def get_current_entry():
     except Exception:
         return err_msg 
     
+
+entries = get_time_entries()
+print(entries)
