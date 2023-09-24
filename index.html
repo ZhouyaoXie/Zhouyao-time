@@ -1,8 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
-<head></head>
+<html lang="en" style="height: 100%;">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+        /* Set the height and width for body and html to make sure they occupy the full viewport */
+        body, html {
+            margin: 0;       /* Remove default margin */
+            padding: 0;      /* Remove default padding */
+            height: 100%;    /* Set height to 100% of the viewport */
+            width: 100%;     /* Set width to 100% of the viewport */
+            overflow: hidden; /* Prevent scrollbars */
+        }
+        
+        /* Make the iframe occupy the full available space */
+        iframe {
+            display: block;  /* Remove any default line-height spacing */
+            border: none;    /* Remove the default border */
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+  
 <body>
   <iframe src="https://what-is-zhouyao-doing.streamlit.app/?embed=True" style="height: 100%; width:100%;">
   </iframe>
 </body>
+  
 </html>
