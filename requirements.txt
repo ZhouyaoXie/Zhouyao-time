@@ -1,2 +1,2 @@
 openai==0.27.9
-streamlit-extras=0.3.2
+streamlit-extras==0.3.2
