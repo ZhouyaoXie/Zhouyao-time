@@ -2,13 +2,27 @@ import streamlit as st
 from chatbot import ask_chatgpt
 
 
-# side bar
-st.sidebar.title("how im spending my time 🏄")
+# Page configuration
+st.set_page_config(
+    page_title="zhouyao's time - ask gpt",
+    page_icon="🏄",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+    menu_items={
+        'About': "zhouyao's time"
+    }
+)
+
+
+# This will create a sidebar
+st.sidebar.title("about")
 st.sidebar.empty()
 st.sidebar.markdown("""
-About Me
-> [my website](xiezhouyao.site)  
-> [my blog](https://zhouyao.substack.com/)"""
+> [project repo](https://github.com/ZhouyaoXie/how-im-spending-my-time)  
+> [zhouyao's website](https://xiezhouyao.site)  
+> [zhouyao's blog](https://zhouyao.substack.com/)  
+>   
+> built with Toggl API, OpenAI API, & Streamlit    """
 )
 
 
