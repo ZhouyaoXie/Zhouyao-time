@@ -1,5 +1,5 @@
 import streamlit as st 
-from chatbot import ask_chatgpt
+from chatbot import ask_chatgpt, init_chat_history
 
 
 # Page configuration
@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="zhouyao's time - ask gpt",
     page_icon="🏄",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="auto",
     menu_items={
         'About': "zhouyao's time"
     }
@@ -27,15 +27,15 @@ st.sidebar.markdown("""
 
 
 # Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+init_chat_history()
+
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar="🦦" if message['role'] == 'user' else "🦀"):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Try: what did Zhouyao do yesterday?"):
+if prompt := st.chat_input("Try: what did Zhouyao do today?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar="🦦"):
         st.markdown(prompt)
@@ -48,4 +48,8 @@ if prompt := st.chat_input("Try: what did Zhouyao do yesterday?"):
             message_placeholder.markdown(full_response + "▌")
         message_placeholder.markdown(full_response)
     st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+
+if 'messages' in st.session_state and len(st.session_state.messages) > 0:
+    st.button("reset chat history", help="clears model's memory about the conversation above", on_click=init_chat_history)
 

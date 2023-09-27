@@ -11,7 +11,7 @@ st.set_page_config(
     page_title="zhouyao's time - now",
     page_icon="🏄",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state= "auto", # "collapsed",
     menu_items={
         'About': "zhouyao's time"
     }

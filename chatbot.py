@@ -18,6 +18,9 @@ MAX_ENTRIES = 350
 current_entry = get_current_entry() 
 time_entries = get_time_entries()
 
+def init_chat_history():
+  st.session_state.messages = []
+
 
 def update_entries():
   global current_entry, time_entries
