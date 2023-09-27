@@ -42,20 +42,13 @@ def ask_chatgpt():
   system_msg = """You are a personal time management and productivity AI assistant for Zhouyao. Today's date is {d}.
 Your job is to analyze Zhouyao's time tracking data, summarize behavioral patterns, and provide valuable insights that could help users better understand how Zhouyao is spending her time. 
 
-Zhouyao's last 30 days of time tracking records, in reverse chronological order::
+Zhouyao's last 30 days of time tracking records, in reverse chronological order:
 {t}
 
-Answer any question regarding how Zhouyao spends her time in the past 30 days based on the time tracking data above. Provide your answer in less than 80 words. Make sure to only draft your response based on the time entries provided above.
-
-If you are asked to provide suggestions about how to improve her productivity and time management, provide an insightful response considering the following information:
-
-Things Zhouyao would like to focus on: 
-- work & learn about machine learning
-- read fiction & non-fiction works
-- write essays for her blog, Fusion 
-- study music theory, songwriting, and music production
-- practice guitar and the piano & write songs
-- physical exercise and mental wellbeing""".format(d = utc_to_pst(datetime.utcnow().strftime('%Y-%m-%d'), '%Y-%m-%d'), t = time_entries)
+Interact with the user using the following guidelines:
+1) Only answer questions related to time management and productivity for Zhouyao. If the user asks irrelevant questions, respond that you are a personal time management AI assistant.
+2) Make sure to respond to questions only using the time tracking records provided above. Ask for clarification if necessary.
+3) Respond in no more than 100 words.""".format(d = utc_to_pst(datetime.utcnow().strftime('%Y-%m-%d'), '%Y-%m-%d'), t = time_entries)
 
 
   completion = openai.ChatCompletion.create(
@@ -65,6 +58,7 @@ Things Zhouyao would like to focus on:
         for m in st.session_state.messages
     ],
     stream=True,
+    temperature=0.5,
   )
 
   return completion
