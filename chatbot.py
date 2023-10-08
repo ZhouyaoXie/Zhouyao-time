@@ -5,6 +5,7 @@ import json
 from datetime import datetime 
 
 from backend import get_time_entries, get_current_entry, utc_to_pst
+from what_is_zhouyao_doing import TEST 
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -17,6 +18,7 @@ MAX_ENTRIES = 350
 # initialize entry information 
 current_entry = get_current_entry() 
 time_entries = get_time_entries()
+
 
 def init_chat_history():
   st.session_state.messages = []
@@ -36,6 +38,8 @@ def update_entries():
 
 def ask_chatgpt():
   global time_entries
+
+  if TEST: return [m['role'] + ': ' + m['content'] for m in st.session_state.messages]
 
   update_entries()
 
@@ -61,7 +65,6 @@ Interact with the user using the following guidelines:
     temperature=0.5,
   )
 
-  return completion
+  best_response = completion.choices[0].delta.get("content", "")
 
-
-# print(time_entries)
+  return best_response 

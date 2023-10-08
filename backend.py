@@ -61,8 +61,6 @@ def get_time_entries(last_n_days = 30):
             stop_time = utc_to_pst(entry['stop'].replace('+00:00', '').replace('Z', '').replace('T', ' '))
             entries.append([project_name, start_time, stop_time, str(entry['duration']) + 's', entry['description']])
 
-    print(len(entries))
-
     sorted_entries = sorted(entries, key=sort_function)
 
     current_date = None
@@ -134,7 +132,3 @@ def get_current_entry():
                 return msg 
     except Exception:
         return err_msg 
-    
-
-entries = get_time_entries()
-print(entries)

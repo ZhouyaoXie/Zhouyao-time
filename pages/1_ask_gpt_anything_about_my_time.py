@@ -13,7 +13,6 @@ st.set_page_config(
     }
 )
 
-
 # This will create a sidebar
 st.sidebar.title("about")
 st.sidebar.empty()
@@ -27,8 +26,8 @@ st.sidebar.markdown("""
 
 
 # Initialize chat history
-init_chat_history()
-
+if 'messages' not in st.session_state:
+    init_chat_history()
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -44,12 +43,12 @@ if prompt := st.chat_input("Try: what did Zhouyao do today?"):
         message_placeholder = st.empty()
         full_response = ""
         for response in ask_chatgpt():
-            full_response += response.choices[0].delta.get("content", "")
+            full_response += response
             message_placeholder.markdown(full_response + "▌")
         message_placeholder.markdown(full_response)
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 
-if 'messages' in st.session_state and len(st.session_state.messages) > 0:
-    st.button("reset chat history", help="clears model's memory about the conversation above", on_click=init_chat_history)
+    reset_button = st.button("reset chat history", help="clears model's memory about the conversation above", on_click = init_chat_history)
+
 

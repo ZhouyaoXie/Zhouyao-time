@@ -17,6 +17,7 @@ st.set_page_config(
     }
 )
 
+TEST = True
 
 for ln in get_current_entry():
     st.header(ln)
@@ -25,7 +26,7 @@ st.markdown("*wants to learn more about how zhouyao has been spending her time r
 
 want_to_contribute = st.button("*ask GPT-4*")
 if want_to_contribute:
-    switch_page("ask_gpt_anything_about_my_time")
+    switch_page("ask_gpt")
 
 
 # This will create a sidebar
