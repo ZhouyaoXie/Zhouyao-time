@@ -1,4 +1,4 @@
-import streamlit as st 
+import streamlit as st
 from chatbot import ask_chatgpt, init_chat_history
 
 
@@ -22,7 +22,9 @@ st.sidebar.markdown("""
 > [zhouyao's blog](https://zhouyao.substack.com/)  
 >   
 > built with Toggl API, OpenAI API, & Streamlit    """
-)
+                    )
+
+# TODO: add info 
 
 
 # Initialize chat history
@@ -43,12 +45,11 @@ if prompt := st.chat_input("Try: what did Zhouyao do today?"):
         message_placeholder = st.empty()
         full_response = ""
         for response in ask_chatgpt():
-            full_response += response
+            full_response += response.choices[0].delta.get("content", "")
             message_placeholder.markdown(full_response + "▌")
         message_placeholder.markdown(full_response)
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
+    st.session_state.messages.append(
+        {"role": "assistant", "content": full_response})
 
-
-    reset_button = st.button("reset chat history", help="clears model's memory about the conversation above", on_click = init_chat_history)
-
-
+    reset_button = st.button(
+        "reset chat history", help="clears model's memory about the conversation above", on_click=init_chat_history)
