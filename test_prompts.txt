@@ -1,0 +1,11 @@
+1)
+prompt: What did Zhouyao do today?
+expected behavior: function calling with today's date, no hallucination
+
+2)
+prompt: What did Zhouyao do on Monday?
+expected behavior: ask follow up question for Monday's date 
+
+3) 
+prompt: How has Zhouyao's time spent on reading changed in the past month relative to her emotional state?
+expected behavior: respond with no information about emotional state, no hallucination 
