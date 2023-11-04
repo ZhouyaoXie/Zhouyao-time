@@ -39,7 +39,9 @@ def format_record(record):
     return f"{project}: {description}, from {start_time} to {end_time}, duration {hours} hours {minutes} minutes"
 
 
-def get_time_entries(start_date, end_date=None):
+def get_time_entries(start_date=None, end_date=None):
+    if start_date is None:
+        start_date = datetime.utcnow().strftime('%Y-%m-%d')
     if end_date is None:
         end_date = datetime.utcnow().strftime('%Y-%m-%d')
 
