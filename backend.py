@@ -61,34 +61,41 @@ def get_time_entries(start_date=None, end_date=None):
                         'content-type': 'application/json', 'Authorization': f'Basic {auth_token}'})
     data_json = data.json()
 
-    entries = []
-    for entry in data_json:
-        # only send time entries that run more than 5 minutes
-        if entry['project_id'] in project_id_mapping and entry['duration'] > 300:
-            project_name = project_id_mapping[entry['project_id']]
-            start_time = utc_to_pst(entry['start'].replace(
-                '+00:00', '').replace('Z', '').replace('T', ' '))
-            stop_time = utc_to_pst(entry['stop'].replace(
-                '+00:00', '').replace('Z', '').replace('T', ' '))
-            entries.append([project_name, start_time, stop_time, str(
-                entry['duration']) + 's', entry['description']])
+    try:
+        entries = []
+        for entry in data_json:
+            # only send time entries that run more than 5 minutes
+            if entry['project_id'] in project_id_mapping and entry['duration'] > 300:
+                project_name = project_id_mapping[entry['project_id']]
+                start_time = utc_to_pst(entry['start'].replace(
+                    '+00:00', '').replace('Z', '').replace('T', ' '))
+                stop_time = utc_to_pst(entry['stop'].replace(
+                    '+00:00', '').replace('Z', '').replace('T', ' '))
+                entries.append([project_name, start_time, stop_time, str(
+                    entry['duration']) + 's', entry['description']])
 
-    sorted_entries = sorted(entries, key=sort_function)
+        sorted_entries = sorted(entries, key=sort_function)
 
-    current_date = None
-    output_string = ""
+        current_date = None
+        output_string = ""
 
-    for record in sorted_entries:
-        record_date = record[1].split(' ')[0]
+        for record in sorted_entries:
+            record_date = record[1].split(' ')[0]
 
-        # Check if the date has changed or is the first record
-        if record_date != current_date:
-            output_string += record_date + "\n"
-            current_date = record_date
+            # Check if the date has changed or is the first record
+            if record_date != current_date:
+                output_string += record_date + "\n"
+                current_date = record_date
 
-        output_string += format_record(record) + "\n"
+            output_string += format_record(record) + "\n"
 
-    return output_string
+        return output_string
+
+    # if there's any error in post-processing retrieved time entries
+    # return the raw request response instead and let GPT decides what to do 
+    except Exception as e:
+        logging.warning("Error parsing Toggl API request response, Error {}".format(str(e)))
+        return data_json 
 
 
 def convert_to_rfc3339(date_string, type, datetime_format = "%Y-%m-%d"):
@@ -168,5 +175,5 @@ def get_current_entry():
 
 
 if __name__ == '__main__':
-    entries = get_time_entries("2023-11-01", "2023-11-01")
+    entries = get_time_entries("2023-03-15", "2023-04-01")
     print(entries)
