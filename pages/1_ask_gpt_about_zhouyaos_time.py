@@ -1,5 +1,5 @@
 import streamlit as st
-from chatbot import ask_chatgpt, init_chat_history
+from chatbot import ask_chatgpt, init_chat_history, get_random_prompt
 
 
 # Page configuration
@@ -13,7 +13,7 @@ st.set_page_config(
     }
 )
 
-# This will create a sidebar
+# create sidebar 
 st.sidebar.title("about")
 st.sidebar.markdown("""
 i've been using Toggl to track my productivity hours for years.  
@@ -35,11 +35,16 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar="🦦" if message['role'] == 'user' else "🦀"):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Try: what did Zhouyao do today?"):
+# take in user input 
+prompt_suggestion = get_random_prompt()
+if prompt := st.chat_input(f"Try: {prompt_suggestion}"):
+    # add user input to message history 
     st.session_state.messages.append({"role": "user", "content": prompt})
+    # display user input 
     with st.chat_message("user", avatar="🦦"):
         st.markdown(prompt)
 
+    # display GPT response as stream 
     with st.chat_message("assistant", avatar="🦀"):
         message_placeholder = st.empty()
         full_response = ""
@@ -51,4 +56,4 @@ if prompt := st.chat_input("Try: what did Zhouyao do today?"):
         {"role": "assistant", "content": full_response})
 
     reset_button = st.button(
-        "reset chat history", help="clears model's memory about the conversation above", on_click=init_chat_history)
+        "reset chat history", help="clears model memory", on_click=init_chat_history)

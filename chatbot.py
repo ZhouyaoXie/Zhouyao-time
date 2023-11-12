@@ -4,6 +4,7 @@ import streamlit as st
 import json
 from datetime import datetime
 import logging
+import random 
 
 from backend import get_time_entries, get_current_entry, utc_to_pst
 
@@ -133,66 +134,17 @@ def complete_message(messages, functions):
             elif "content" in deltas and not function_call_detected:
                 return response_generator
 
-    # for response_chunk in completion:
-    #     # check if GPT wanted to call a function
-    #     response_message = response_chunk["choices"][0]["delta"]
-    #     if "function_call" in response_message:
-    #         print(response_message)
-    #         available_functions = {
-    #             "get_time_entries": get_time_entries,
-    #         }
 
-    #         try:
-    #             # get input parameters for function calling
-    #             function_name = response_message["function_call"]["name"]
-    #             function_to_call = available_functions[function_name]
-    #         except Exception as e:
-    #             logging.warning(
-    #                 "Invalid function name. Error: {}".format(str(e)))
-    #             messages.append({
-    #                 'role': 'user',
-    #                 'content': 'Try again with a valid function name: {})'.format(list(available_functions.keys()))
-    #             })
-    #             return complete_message(messages, functions)
-
-    #         try:
-    #             function_args = json.loads(
-    #                 response_message["function_call"]["arguments"])
-    #         except Exception as e:
-    #             logging.warning("Invalid arguments. Error: {}".format(str(e)))
-    #             messages.append({
-    #                 'role': 'user',
-    #                 'content': 'To call function `get_time_entries`, you have to provide a valid start_date and end_date as arguments.)'
-    #             })
-    #             return complete_message(messages, functions)
-
-    #         logging.info("calling function {}".format(function_name))
-    #         try:
-    #             function_response = function_to_call(
-    #                 start_date=function_args.get("start_date"),
-    #                 end_date=function_args.get("end_date"),
-    #             )
-    #         except Exception as e:
-    #             logging.warning(
-    #                 "function calling failed. Error: {}".format(str(e)))
-    #             function_response = get_time_entries()
-
-    #         # extend conversation with assistant's reply
-    #         messages.append(response_message)
-    #         messages.append(
-    #             {
-    #                 "role": "function",
-    #                 "name": function_name,
-    #                 "content": function_response,
-    #             }
-    #         )  # extend conversation with function response
-    #         second_response = openai.ChatCompletion.create(
-    #             model="gpt-3.5-turbo-16k",
-    #             messages=messages,
-    #             temperature=0.2,
-    #             stream=True,
-    #         )  # get a new response from GPT where it can see the function response
-
-    #         return second_response
-
-    # return completion
+def get_random_prompt():
+  """
+  randomly selects suggestion prompt to display at chatbot input bar  
+  """
+  prompt_suggestions = [
+      "what did Zhouyao do today?",
+      "what did Zhouyao do yesterday?",
+      "which books are Zhouyao reading recently?",
+      "summarize how Zhouyao spent her time in the last 30 days",
+      "what are five interesting insights about Zhouyao's productivity habits?",
+      "give five actionable suggestions based on Zhouyao's activities last month",
+  ]
+  return random.choice(prompt_suggestions)
