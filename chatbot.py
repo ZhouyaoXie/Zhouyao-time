@@ -4,31 +4,37 @@ import streamlit as st
 import json
 from datetime import datetime
 import logging
-import random 
+import random
 
 from backend import get_time_entries, get_current_entry, utc_to_pst
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-# truncation logic:
-# one record approx 40 tokens, task description = 300 tokens, user question = 200 tokens
-# response = 600 tokens
-# num of records = (16000 - 300 - 200 - 600) // 40 = 372
-
 
 def init_chat_history():
+    """
+    Initialize chat history in session state to empty array  
+    """
     st.session_state.messages = []
 
 
 def ask_chatgpt():
-    global time_entries
+    """
+    Call GPT with function calling, which can retrieve time entries in a specific time range from Toggl API. 
 
+    Parse GPT response to decide whether it wants to call the function. 
+    If it does, further parse function's input parameters, calls the function, attach the return values to the prompt, then call GPT again.  
+    Return the model's response. 
+    Note that GPT's API call has `stream` set to True, meaning that the function will return model response as a generator object. 
+    """
+
+    # set system message
     system_msg = """You are a personal time management and productivity AI assistant for Zhouyao. The time now is {d}.
 Your job is to answer user's questions about Zhouyao's time tracking data, which you may obtain by calling the `get_time_entries` function with the appropriate `start_time` and `end_time` arguments. 
 Your response must be factually correct. If you make up non-existent information, the user will suffer greatly due to misinformation. If you decide that the question can not be answered using the information you have, you should ask follow up questions for the user to provide more information.
 Limit your response to 100 words.""".format(d=utc_to_pst(datetime.utcnow().strftime('%Y-%m-%d %H:%M, %A'), '%Y-%m-%d %H:%M, %A'))
 
-    print(utc_to_pst(datetime.utcnow().strftime('%Y-%m-%d %H:%M, %A'), '%Y-%m-%d %H:%M, %A'))
+    # set function definition
     functions = [
         {
             "name": "get_time_entries",
@@ -50,16 +56,13 @@ Limit your response to 100 words.""".format(d=utc_to_pst(datetime.utcnow().strft
         },
     ]
 
+    # compile chat history
     messages = [{"role": "system", "content": system_msg}] + [
         {"role": m["role"], "content": m["content"]}
         for m in st.session_state.messages
     ]
 
-    return complete_message(messages, functions)
-
-
-def complete_message(messages, functions):
-
+    # calls GPT with function calling
     response_generator = openai.ChatCompletion.create(
         model="gpt-4-1106-preview",
         messages=messages,
@@ -69,6 +72,8 @@ def complete_message(messages, functions):
         stream=True,
     )
 
+    # parse model response to determine whether model wants to call a function
+    # code reference: https://community.openai.com/t/functions-calling-with-streaming/305742
     response_text = ""
     function_call_detected = False
     func_call = {"name": "", "arguments": ""}
@@ -99,8 +104,6 @@ def complete_message(messages, functions):
                     start_date=function_args.get("start_date"),
                     end_date=function_args.get("end_date"),
                 )
-
-                print(function_response)
 
                 # extend conversation with assistant's reply
                 messages.append(
@@ -136,15 +139,15 @@ def complete_message(messages, functions):
 
 
 def get_random_prompt():
-  """
-  randomly selects suggestion prompt to display at chatbot input bar  
-  """
-  prompt_suggestions = [
-      "what did Zhouyao do today?",
-      "what did Zhouyao do yesterday?",
-      "which books are Zhouyao reading recently?",
-      "summarize how Zhouyao spent her time in the last 30 days",
-      "what are five interesting insights about Zhouyao's productivity habits?",
-      "give five actionable suggestions based on Zhouyao's activities last month",
-  ]
-  return random.choice(prompt_suggestions)
+    """
+    randomly selects suggestion prompt to display at chatbot input bar  
+    """
+    prompt_suggestions = [
+        "what did Zhouyao do today?",
+        "what did Zhouyao do yesterday?",
+        "which books are Zhouyao reading recently?",
+        "summarize how Zhouyao spent her time in the last 30 days",
+        "what are five interesting insights about Zhouyao's productivity habits?",
+        "give five actionable suggestions based on Zhouyao's activities last month",
+    ]
+    return random.choice(prompt_suggestions)

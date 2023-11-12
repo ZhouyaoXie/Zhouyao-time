@@ -8,6 +8,7 @@ import logging
 
 email, password = st.secrets["email"], st.secrets['password']
 
+# list of project ids to analyze 
 project_id_mapping = {
     163465351: 'Email',
     165995370: 'Personal Project',
@@ -33,6 +34,9 @@ def sort_function(record):
 
 
 def format_record(record):
+    """ 
+    Format a time record as a readable natural language string  
+    """
     project, start_time, end_time, duration, description = record
     hours, remainder = divmod(int(duration[:-1]), 3600)
     minutes = remainder // 60
@@ -45,15 +49,16 @@ def get_time_entries(start_date=None, end_date=None):
     if end_date is None:
         end_date = datetime.utcnow().strftime('%Y-%m-%d')
 
-    # do not retrieve more than 45 days of data
-    if datetime.fromisoformat(end_date) - datetime.fromisoformat(start_date) > timedelta(days=45):
-        raise ValueError("Cannot query more than 45 days of time entries. Start date {} to end date {} has exceeded max date range.".format(
+    # do not retrieve more than 90 days of data
+    if datetime.fromisoformat(end_date) - datetime.fromisoformat(start_date) > timedelta(days=90):
+        raise ValueError("Cannot query more than 90 days of time entries. Start date {} to end date {} has exceeded max date range.".format(
             start_date, end_date))
 
+    # Toggle API is in UTC timezone, so need to convert timestamp to UTC first 
     start_datetime = convert_to_rfc3339(start_date, "start")
     end_datetime = convert_to_rfc3339(end_date, "end")
 
-    print('start datetime {}, end datetime {}'.format(start_datetime, end_datetime))
+    logging.info('start datetime {}, end datetime {}'.format(start_datetime, end_datetime))
 
     auth_token = b64encode(f"{email}:{password}".encode()).decode("ascii")
     url = f'https://api.track.toggl.com/api/v9/me/time_entries?start_date={start_datetime}&end_date={end_datetime}'
@@ -94,7 +99,7 @@ def get_time_entries(start_date=None, end_date=None):
     # if there's any error in post-processing retrieved time entries
     # return the raw request response instead and let GPT decides what to do 
     except Exception as e:
-        logging.warning("Error parsing Toggl API request response, Error {}".format(str(e)))
+        logging.error("Error parsing Toggl API request response, Error {}".format(str(e)))
         return data_json 
 
 
@@ -137,6 +142,9 @@ def utc_to_pst(utc_time_str, input_format="%Y-%m-%d %H:%M:%S"):
 
 
 def get_current_entry():
+    """
+    Retrieve the latest time entry from Toggl API 
+    """
     url = 'https://api.track.toggl.com/api/v9/me/time_entries'
     auth_token = b64encode(f"{email}:{password}".encode()).decode("ascii")
     data = requests.get(url, headers={
@@ -172,8 +180,3 @@ def get_current_entry():
             "zhouyao might be on a vacation with her sea otter friends.",
             "you may also try refreshing this page."
         ]
-
-
-if __name__ == '__main__':
-    entries = get_time_entries("2023-03-15", "2023-04-01")
-    print(entries)

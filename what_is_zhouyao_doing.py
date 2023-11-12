@@ -17,18 +17,17 @@ st.set_page_config(
     }
 )
 
+# display ask GPT button
 for ln in get_current_entry():
     st.header(ln)
 add_vertical_space(5)
 st.markdown(
     "*want to learn more about how zhouyao has been spending her time recently?*")
-
-want_to_contribute = st.button("*ask GPT!*")
-if want_to_contribute:
+ask_gpt = st.button("*ask GPT!*")
+if ask_gpt:
     switch_page("ask_gpt_about_zhouyaos_time")
 
-
-# This will create a sidebar
+# create sidebar info
 st.sidebar.title("about")
 st.sidebar.markdown("""
 i've been using Toggl to track my productivity hours for years.  
