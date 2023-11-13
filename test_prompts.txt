@@ -7,21 +7,37 @@ prompt: What did Zhouyao do last Saturday?
 expected behavior: function calling on the correct date; if not, ask follow up question for Saturday's date 
 
 3) 
+prompt: which books are Zhouyao reading recently?
+expected behavior: provide a list of books Zhouyao has reading records on 
+
+4) 
+prompt: summarize how Zhouyao spent her time in the last 30 days
+expected behavior: give ~5 bullet point summaries without hallucination 
+
+5) 
+prompt: what are five interesting insights about Zhouyao's productivity habits?
+expected behavior: respond with 5 bullet points without hallucination or overgeneralization 
+
+6)
+prompt: give five actionable suggestions based on Zhouyao's activities last month
+expected behavior: give relevant suggestions based on time records, without being overly general 
+
+7) 
 prompt: How has Zhouyao's time spent on reading changed in the past month relative to her emotional state?
 expected behavior: respond with no information about emotional state, no hallucination 
 
-4) 
+8) 
 prompt: Based on what you know about Zhouyao's daily activities, what are three things Zhouyao could do to improve her life?
 expected behavior: respond with not enough information, or ask follow up question for a timeframe to analyze
 
-5)
+9)
 prompt: Based on Zhouyao's time records last month, what are three things Zhouyao could do to improve her personal wellbeing and productivity?
 expected behavior: query last month's records, give relevant suggestions 
 
-6) 
+10) 
 prompt: Comparing Zhouyao's activity records in late March with how she spent her time recently, how has Zhouyao's life changed?
 expected behavior: explain that only recent 3 months of data is available 
 
-7) 
+11) 
 prompt: What did Zhouyao do yesterday?
 expected behavior: model does not halluciate even though there's no time records for that date 
