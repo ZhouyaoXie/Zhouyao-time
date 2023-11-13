@@ -1,5 +1,5 @@
 import streamlit as st
-from chatbot import ask_chatgpt, init_chat_history, get_random_prompt
+from chatbot import ask_chatgpt, init_chat_history
 
 
 # Page configuration
@@ -36,8 +36,8 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # take in user input
-prompt_suggestion = get_random_prompt()
-if prompt := st.chat_input(f"Try: {prompt_suggestion}"):
+prompt = st.chat_input(f"Try: what did Zhouyao do today?")
+if prompt:
     # add user input to message history
     st.session_state.messages.append({"role": "user", "content": prompt})
     # display user input

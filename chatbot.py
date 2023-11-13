@@ -4,7 +4,6 @@ import streamlit as st
 import json
 from datetime import datetime
 import logging
-import random
 
 from backend import get_time_entries, get_current_entry, utc_to_pst
 
@@ -137,17 +136,3 @@ Limit your response to 100 words.""".format(d=utc_to_pst(datetime.utcnow().strft
             elif "content" in deltas and not function_call_detected:
                 return response_generator
 
-
-def get_random_prompt():
-    """
-    randomly selects suggestion prompt to display at chatbot input bar  
-    """
-    prompt_suggestions = [
-        "what did Zhouyao do today?",
-        "what did Zhouyao do yesterday?",
-        "which books are Zhouyao reading recently?",
-        "summarize how Zhouyao spent her time in the last 30 days",
-        "what are five interesting insights about Zhouyao's productivity habits?",
-        "give five actionable suggestions based on Zhouyao's activities last month",
-    ]
-    return random.choice(prompt_suggestions)
