@@ -1,0 +1,81 @@
+/* style.css */
+
+.doto-<uniquifier> {
+  font-family: "Doto", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+  font-variation-settings:
+    "ROND" 100;
+}
+
+
+body {
+    margin: 0;
+    font-family: "Doto", sans-serif;
+    font-size: 20px;
+    background-color: #E1E5EE;
+    color: #6096BA;
+  }
+  
+  .container {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  /* Sidebar styling */
+  .sidebar {
+    width: 300px;
+    padding: 20px;
+    background-color: #F0F2F6;
+  }
+  
+  .sidebar h2 {
+    color: #F17300;
+    margin-top: 0;
+    font-family: "Doto", sans-serif;
+    text-shadow: 2px 0 8px rgba(241, 115, 0, 0.3),
+                 4px 0 12px rgba(241, 115, 0, 0.2),
+                 6px 0 16px rgba(241, 115, 0, 0.1);
+    font-size: 20px;
+  }
+  
+  .sidebar a {
+    color: #6096BA;
+    text-decoration: none;
+    position: relative;
+  }
+  
+  .sidebar a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background: linear-gradient(90deg, #6096BA, #F17300);
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out;
+  }
+
+  .sidebar a:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+
+  .sidebar-text {
+    color: #052F5F;
+    font-family: monospace;
+    font-size: 14px;
+  }
+  
+  /* Main content styling */
+  .main-content {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .main-content h1 {
+    color: #6096BA;
+  }
