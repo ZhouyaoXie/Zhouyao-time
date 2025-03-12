@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zhouyao's time - now</title>
+  <!-- Favicon using an inline SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%22116%22 font-size=%2296%22>🏄</text></svg>">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&family=Borel&family=Doto:wght@100..900&family=Playwrite+AU+SA:wght@100..400&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Rubik+Bubbles&display=swap" rel="stylesheet">
+  <style>
+    @keyframes neonFlicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        text-shadow: 
+          0 0 5px #6096BA,
+          0 0 10px #6096BA,
+          0 0 20px #6096BA,
+          0 0 40px #F17300,
+          0 0 80px #F17300;
+      }
+      20%, 24%, 55% {
+        text-shadow: none;
+      }
+    }
+    
+    @keyframes glitch {
+      0% { transform: translate(0) }
+      20% { transform: translate(-2px, 2px) }
+      40% { transform: translate(-2px, -2px) }
+      60% { transform: translate(2px, 2px) }
+      80% { transform: translate(2px, -2px) }
+      100% { transform: translate(0) }
+    }
+
+    .cyberpunk-entry {
+      opacity: 0;
+      transform: scale(0.8);
+      animation: 
+        fadeIn 0.5s ease forwards,
+        neonFlicker 0.1s ease-in-out,
+        glitch 0.2s ease-in-out infinite;
+      color: #F17300;
+      letter-spacing: 2px;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2 class="sidebar-text">about</h2>
+      <p class="sidebar-text">
+        this page shows what im doing <em>right now</em>.
+        <br><br>
+        human connections often happen in the smallest and most unexpected moments.
+        <br><br>
+        i hope this page brings our hearts closer together. 
+      </p><br><br>
+      <h2 class="sidebar-text">learn more</h2>
+      <p class="sidebar-text">
+        <a href="https://github.com/how-im-spending-my-time" target="_blank">Github</a>
+      </p>
+      <p class="sidebar-text">
+        <a href="https://zhouyaoxie.com/" target="_blank">Zhouyao Xie Website</a>
+      </p>
+      <p class="sidebar-text">
+      i've been using Toggl to track my productivity hours for years. this habit helps give me a sense of direction and mindfulness when i work and study. it has also yielded interesting findings like <a href="https://substack.com/@zhouyao/p-89985111">this one</a>.
+    </p>
+    </aside>
+    <!-- Main Content -->
+    <main class="main-content">
+      <div id="entries">
+        <!-- A loading message until the entry is fetched -->
+        <p>Loading current entry...</p>
+      </div>
+    </main>
+  </div>
+  <script>
+    const colors = ['#F17300', '#6096BA']; // Brand colors from your CSS
+    
+    function colorizeRandomWords(text) {
+      const words = text.split(' ');
+      const indices = new Set();
+      
+      // Select 3 random unique indices
+      while(indices.size < 3 && indices.size < words.length) {
+        indices.add(Math.floor(Math.random() * words.length));
+      }
+      
+      // Wrap selected words with colored spans
+      return words.map((word, index) => {
+        if(indices.has(index)) {
+          const color = colors[Array.from(indices).indexOf(index)];
+          return `<span style="color: ${color}">${word}</span>`;
+        }
+        return word;
+      }).join(' ');
+    }
+
+    // Add event listener to modify entries after they're loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      fetch('/api/current-entry')
+        .then(response => response.json())
+        .then(data => {
+          const entriesContainer = document.getElementById('entries');
+          entriesContainer.innerHTML = "";
+          data.entries.forEach(entry => {
+            const header = document.createElement('h1');
+            header.className = 'cyberpunk-entry';
+            header.innerHTML = colorizeRandomWords(entry);
+            entriesContainer.appendChild(header);
+            
+            // After animation completes, remove the cyberpunk effects
+            setTimeout(() => {
+              header.style.animation = 'none';
+              header.style.opacity = '1';
+              header.style.transform = 'none';
+            }, 2500);
+          });
+        })
+        .catch(error => {
+          console.error("Error fetching entries:", error);
+          document.getElementById('entries').innerHTML = "<p>Error loading entry.</p>";
+        });
+    });
+  </script>
+</body>
+</html>
