@@ -6,7 +6,13 @@ from base64 import b64encode
 import pytz
 import logging
 
-email, password = st.secrets["email"], st.secrets['password']
+mode = None 
+try: 
+    email, password = st.secrets["email"], st.secrets['password']
+    mode = "streamlit"
+except:
+    email, password = os.getenv("MY_EMAIL"), os.getenv("MY_PASSWORD")
+    mode = "flask"
 
 # list of project ids to analyze 
 project_id_mapping = {
@@ -167,12 +173,20 @@ def get_current_entry():
                     description = ': ' + data_json[i]['description']
                 else:
                     description = ''
-                msg = [
-                    "from *{start}* to *{stop}*,".format(
-                        start=start_time, stop=stop_time),
-                    "zhouyao is spending her time on:",
-                    ":orange[<< {task} >>]".format(task=project + description)
-                ]
+                if mode == "streamlit":
+                    msg = [
+                        "from *{start}* to *{stop}*,".format(
+                            start=start_time, stop=stop_time),
+                        "zhouyao is spending her time on:",
+                        ":orange[<< {task} >>]".format(task=project + description)
+                    ]
+                elif mode == "flask":
+                    msg = [
+                        "from {start} to {stop},".format(
+                            start=start_time, stop=stop_time),
+                        "zhouyao is spending her time on:",
+                        "『 {task} 』".format(task=project + description)
+                    ]
                 return msg
     except Exception:
         return [
