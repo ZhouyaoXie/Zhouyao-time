@@ -1,6 +1,18 @@
 document.addEventListener("DOMContentLoaded", function() {
+  const logger = {
+    error: function(message, error) {
+      console.error(message, error);
+      // Could add additional logging functionality here like sending to a logging service
+    }
+  };
+
   fetch('/api/current-entry')
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
     .then(data => {
       const entriesContainer = document.getElementById('entries');
       // Clear the loading message
@@ -13,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
       });
     })
     .catch(error => {
-      console.error("Error fetching entries:", error);
+      logger.error("Error fetching entries:", error);
       document.getElementById('entries').innerHTML = "<p>Error loading entry.</p>";
     });
 });
