@@ -37,8 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const entriesContainer = document.getElementById('entries');
       // Clear the loading message
       entriesContainer.innerHTML = "";
-      // Assuming data.entries is an array of strings
-      data.entries.forEach(entry => {
+      (Array.isArray(data) ? data : []).forEach(entry => {
         const header = document.createElement('h1');
         header.className = 'cyberpunk-entry';
         header.innerHTML = colorizeRandomWords(entry);
