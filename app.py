@@ -1,12 +1,14 @@
-import os
 from flask import Flask, jsonify, render_template
 from dotenv import load_dotenv
 from backend import get_current_entry
 
+
 # Load credentials from .env file
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, 
+    static_url_path='',
+    static_folder='static')
 
 @app.route('/')
 def index():
@@ -14,8 +16,8 @@ def index():
 
 @app.route('/api/current-entry')
 def current_entry():
-    entries = get_current_entry()
-    return jsonify({"entries": entries})
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    try:
+        entries = get_current_entry()
+        return jsonify({"entries": entries})
+    except Exception as e: 
+        return jsonify({"error": str(e)}), 500  # Return a proper error response
