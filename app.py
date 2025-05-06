@@ -14,7 +14,7 @@ app = Flask(__name__,
 def index():
     return render_template('index.html')
 
-@app.route('/api/current-entry')
+@app.route('/now/api/current-entry')
 def current_entry():
     try:
         entries = get_current_entry()
